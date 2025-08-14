@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.XR.Haptics;
 
 public class FPController : MonoBehaviour
 
@@ -33,7 +34,11 @@ public class FPController : MonoBehaviour
     [Header("Pickup Settings")]
     public float pickupRange = 3f;
     public Transform holdPoint;
-    private PickUpObject heldObject; 
+    private PickUpObject heldObject;
+
+    [Header("ThrowSettings")]
+    public float throwForce = 10f;
+    public float throwUpwardBoost = 1f;
 
     private void Awake()
     {
@@ -163,5 +168,16 @@ public class FPController : MonoBehaviour
         {
             heldObject.MoveToHoldPoint(holdPoint.position);
         }
+    }
+
+    public void OnThrow(InputAction.CallbackContext context)
+    {
+        if (!context.performed) return;
+        if (heldObject == null) return;
+        Vector3 dir = cameraTransform.forward;
+        Vector3 impusle = dir * throwForce + Vector3.up * throwUpwardBoost;
+
+        heldObject.Throw(impusle);
+        heldObject = null;
     }
 }
